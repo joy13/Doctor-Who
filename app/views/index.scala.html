@@ -1,7 +1,26 @@
-@(message: String)
+@(	symptoms: List[Symptom],
+	form: Form[HomeViewModel]
+	)
+	
+@import helper._
 
-@main("Welcome to Play (altered view)") {
 
-    @play20.welcome(message, style = "Java")
+@main("Welcome YOUR DOOM!!!") {
+
+    @play20.welcome("DOOM:", style = "Java")
+    
+    @form(routes.Application.showDisease()) {
+        
+         <ul> 
+			@for(symptom <- symptoms) {
+	  			<input type='checkbox' name='topic' value=@symptom>@symptom.name <br>
+			} 
+		</ul>
+        
+        <input type="submit" value="Submit">
+        
+    }
+    
+  
 
 }
