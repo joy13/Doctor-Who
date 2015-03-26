@@ -8,8 +8,8 @@ import java.util.List;
 public class HomeViewModel
 {
 	//List of Symptoms
-	List<Symptom> symptoms;
+	public List<String> symptoms;
 	//Patient info
-	Patient patient;
+	//public Patient patient;
 	
 }

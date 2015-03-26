@@ -1,26 +1,15 @@
 @(	symptoms: List[Symptom],
-	form: Form[HomeViewModel]
+	symptomForm: Form[HomeViewModel]
 	)
-	
-@import helper._
+ @import helper._
+ 
+<h1>Welcome!</h1>
 
 
-@main("Welcome YOUR DOOM!!!") {
-
-    @play20.welcome("DOOM:", style = "Java")
-    
-    @form(routes.Application.showDisease()) {
-        
-         <ul> 
-			@for(symptom <- symptoms) {
-	  			<input type='checkbox' name='topic' value=@symptom>@symptom.name <br>
+@form(routes.Application.showDisease()) {
+        @for(symptom <- symptoms) {
+	  			<input type='checkbox' name='selectedSymptoms' value=@symptom.name> @symptom.name <br>
 			} 
-		</ul>
+        <input type="submit" value="Create">
         
-        <input type="submit" value="Submit">
-        
-    }
-    
-  
-
-}
+    }  
