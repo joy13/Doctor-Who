@@ -44,7 +44,8 @@ public class Application extends Controller {
     
     public static Result showDisease() {
     	
-    	//List<Symptom> symptoms = Symptom.symptomFinder.all();    	
+    	//List<Symptom> symptoms = Symptom.symptomFinder.all();
+    	
     	Form<HomeViewModel> filledForm = homeForm.bindFromRequest();
     	
 		if(filledForm.hasErrors()) {
@@ -57,10 +58,11 @@ public class Application extends Controller {
 	    	m = request().body().asFormUrlEncoded();
 	    	String[] selectedSymptomsAsStrings = m.get("selectedSymptoms");
 	    	
-	    	SQLiteJDBC sql = new SQLiteJDBC();
+	    	/*SQLiteJDBC sql = new SQLiteJDBC();
 	    	Integer[] inputSymptomIds = sql.getSymptomIdsFromNames(inputSymptoms);
 
-	    	HashMap<String,Float> diseases = utils.DiagnosisDecisionAlgorithm.getScoredDiagnosis(selectedSymptomsAsStrings);
+	    	HashMap<String,Float> diseases = utils.DiagnosisDecisionAlgorithm.getScoredDiagnosis(selectedSymptomsAsStrings);*/
+	    	return ok(selectedSymptomsAsStrings[0]);
     	  }
     	
     }
