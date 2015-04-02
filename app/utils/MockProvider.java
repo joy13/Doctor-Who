@@ -11,10 +11,10 @@ public class MockProvider {
 	{
 		List<Symptom> symptoms = new ArrayList<Symptom>();
 		Symptom s1 = new Symptom();
-		s1.name = "Wheeze";
+		s1.name = "hiccup";
 		
 		Symptom s2 = new Symptom();
-		s2.name = "Fever";
+		s2.name = "cough";
 		
 		symptoms.add(s1);
 		symptoms.add(s2);

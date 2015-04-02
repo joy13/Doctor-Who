@@ -1,8 +1,12 @@
 package controllers;
 
+import utils.*;
+
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.sql.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -42,7 +46,7 @@ public class Application extends Controller {
 		return ok(index.render(symptoms, homeForm));
     }
     
-    public static Result showDisease() {
+    public static Result showDisease() throws ClassNotFoundException, SQLException {
     	
     	//List<Symptom> symptoms = Symptom.symptomFinder.all();
     	
@@ -57,14 +61,21 @@ public class Application extends Controller {
 			Map<String, String[]> m = new HashMap<String, String[]>();
 	    	m = request().body().asFormUrlEncoded();
 	    	String[] selectedSymptomsAsStrings = m.get("selectedSymptoms");
+	    	SQLiteJDBC s = new SQLiteJDBC();
 	    	
-	    	/*SQLiteJDBC sql = new SQLiteJDBC();
-	    	Integer[] inputSymptomIds = sql.getSymptomIdsFromNames(inputSymptoms);
-
-	    	HashMap<String,Float> diseases = utils.DiagnosisDecisionAlgorithm.getScoredDiagnosis(selectedSymptomsAsStrings);*/
-	    	return ok(selectedSymptomsAsStrings[0]);
-    	  }
+	    	DiagnosisDecisionAlgorithm algo = new DiagnosisDecisionAlgorithm();
+	    	HashMap<String,Float> diseases = algo.getScoredDiagnosis(selectedSymptomsAsStrings);
+	    	Collection<Float> values = diseases.values();
+	    	Set<String> diagnosis = diseases.keySet();
+	    	return ok(values.iterator().next().toString());
+    	  }	
+    }
+    
+    public static Result BookAppointment() {
     	
+    	
+    	
+    	return ok();
     }
 
 }
