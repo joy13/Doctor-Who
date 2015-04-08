@@ -1,9 +1,13 @@
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.http.client.ClientProtocolException;
+
+import utils.CallFHIR;
 import utils.DiagnosisDecisionAlgorithm;
 import utils.SQLiteJDBC;
 
@@ -12,7 +16,7 @@ public class UnitTest {
 
 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
 		// TODO Auto-generated method stub
-		SQLiteJDBC sql = new SQLiteJDBC();
+		//SQLiteJDBC sql = new SQLiteJDBC();
 //		Integer[] syms = {27,80}; 
 //		HashMap<Integer, Integer[]> mp = sql.getDiagnosisSymptomMap();
 //		Iterator it = mp.entrySet().iterator();
@@ -26,17 +30,28 @@ public class UnitTest {
 //	        }
 //	        it.remove(); // avoids a ConcurrentModificationException
 //	    }
-		/*
-		DiagnosisDecisionAlgorithm algo = new DiagnosisDecisionAlgorithm();
-		String[] inputSymptoms = {"hiccup","cough","headache","watery eyes","nasal congestion","sore throat","sneeze","mouth breathing"};
-		Integer[] inputSymptomIds = sql.getSymptomIdsFromNames(inputSymptoms);
-		HashMap<String, Float> map = algo.getScoredDiagnosis(inputSymptoms);
-		Iterator it = map.entrySet().iterator();
-		System.out.println("Diagnosis");
-	    while (it.hasNext()) {
-	        Map.Entry pair = (Map.Entry)it.next();
-	        System.out.println(pair.getKey()+ " score: " + pair.getValue());
-	    }*/
+//		
+//		DiagnosisDecisionAlgorithm algo = new DiagnosisDecisionAlgorithm();
+//		String[] inputSymptoms = {"hiccup","cough","headache","watery eyes","nasal congestion","sore throat","sneeze","mouth breathing"};
+//		Integer[] inputSymptomIds = sql.getSymptomIdsFromNames(inputSymptoms);
+//		HashMap<String, Float> map = algo.getScoredDiagnosis(inputSymptoms);
+//		Iterator it = map.entrySet().iterator();
+//		System.out.println("Diagnosis");
+//	    while (it.hasNext()) {
+//	        Map.Entry pair = (Map.Entry)it.next();
+//	        System.out.println(pair.getKey()+ " score: " + pair.getValue());
+//	    }
+		
+		CallFHIR fhir = new CallFHIR();
+		try {
+			Map map = fhir.getSpecialists();
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 

@@ -3,7 +3,9 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index()
+GET		/							controllers.Application.index()
+
+GET 	/symptoms					controllers.Application.symtoms()
 
 #POST data from HomePage
 POST	/							controllers.Application.showDisease()

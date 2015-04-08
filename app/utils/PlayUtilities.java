@@ -8,28 +8,46 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.codesnippets4all.json.generators.JsonGeneratorFactory;
+import com.codesnippets4all.json.parsers.JSONParser;
+
 public class PlayUtilities {
-    
-    public static <K,V extends Comparable<? super V>> 
-    Map<K, V> entriesSortedByValues(Map<K,V> map) {
 
-List<Entry<K,V>> sortedEntries = new ArrayList<Entry<K,V>>(map.entrySet());
+	public static <K,V extends Comparable<? super V>> 
+	Map<K, V> entriesSortedByValues(Map<K,V> map) {
 
-Collections.sort(sortedEntries, 
-    new Comparator<Entry<K,V>>() {
-        @Override
-        public int compare(Entry<K,V> e1, Entry<K,V> e2) {
-            return e2.getValue().compareTo(e1.getValue());
-        }
-    }
-);
+		List<Entry<K,V>> sortedEntries = new ArrayList<Entry<K,V>>(map.entrySet());
 
-Map<K, V> result = new LinkedHashMap<K, V>();
-for (Map.Entry<K, V> entry : sortedEntries)
-{
-    result.put( entry.getKey(), entry.getValue() );
-}
-return result;
-}
+		Collections.sort(sortedEntries, 
+				new Comparator<Entry<K,V>>() {
+			@Override
+			public int compare(Entry<K,V> e1, Entry<K,V> e2) {
+				return e2.getValue().compareTo(e1.getValue());
+			}
+		}
+				);
+
+		Map<K, V> result = new LinkedHashMap<K, V>();
+		for (Map.Entry<K, V> entry : sortedEntries)
+		{
+			result.put( entry.getKey(), entry.getValue() );
+		}
+		return result;
+	}
+
+	public static Map getMapFromJson(String json)
+	{
+		JsonGeneratorFactory factory=JsonGeneratorFactory.getInstance();
+		JSONParser parser= new JSONParser();
+		Map jsonData;
+		try {
+			jsonData=parser.parseJson(json);
+		}
+		catch(Exception e)
+		{ 
+			jsonData = null;
+		}
+		return jsonData;
+	}
 
 }

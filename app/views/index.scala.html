@@ -1,15 +1,125 @@
-@(	symptoms: List[Symptom],
-	symptomForm: Form[HomeViewModel]
-	)
- @import helper._
- 
-<h1>Welcome!</h1>
+@import helper._
+@(message: String)
+<link rel="stylesheet" media="screen" href=@routes.Assets.at("stylesheets/jquery-ui.css")>
+<link rel="stylesheet" media="screen" href=@routes.Assets.at("stylesheets/bootstrap.min.css")>
+<script type="text/javascript" src="@routes.Assets.at("/javascripts/jquery.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("/javascripts/jquery-ui.js")"></script>
+<script type="text/javascript">
+var suggestions = [];
+$.getJSON("/symptoms",function(data) {
+    $.each(data, function(i, val) {
+	var obj = {};
+	obj.label = val.name;
+    obj.id = val.id;
+    suggestions.push(obj);
+    });
+});
+		$(document).ready(function(){
+			$("#sym").autocomplete({source :suggestions });
+			    });
+</script>
+<style>
+.fif {
+    display: inline-block;
+    float:left;
+    color: #000000;
+    background-color: #7FFFD4;
+    border-bottom: 1px solid #3E6D8E;
+    border-right: 1px solid #7F9FB6;
+    padding: 3px 4px 3px 4px;
+    margin: 2px 8px 2px 0;
+    text-decoration: none;
+    font-size: 10pt;
+    line-height: 2.4;
+    white-space: nowrap;
+}
 
+.inl {
+    margin-top:10px;
+    }
+</style>
 
-@form(routes.Application.showDisease()) {
-        @for(symptom <- symptoms) {
-	  			<input type='checkbox' name='selectedSymptoms' value=@symptom.name> @symptom.name <br>
-			} 
-        <input type="submit" value="Create">
-        
-    }  
+<script>
+var i=0;
+var added_symptoms = [];
+function add(){    
+    if (document.getElementById('sym').value!='') 
+    {   
+        i++;  
+        var title =document.getElementById('sym').value;
+        var node = document.createElement('div'); 
+        node.className = "fif";
+        added_symptoms.push(title);   
+        node.innerHTML = '<li><a id="s'+i+'"></a>'+title+'</li>';       
+        document.getElementById('tagdiv').appendChild(node);    
+    }
+}
+</script>
+<body>
+
+ <div class="container">
+
+      <!-- Static navbar -->
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li class="active"><a href="#"><b>Check Symptoms</b></a></li>
+              <li><a href="#"><b>Find a Doctor</b></a></li>
+              <li><a href="#"><b>Book an Appointment</b></a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="#">Contact Us</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav>
+
+      <!-- Main component message or call to action -->
+      <div class="jumbotron">
+      <h1> Doctor Who</h1>
+        <h2>How are you feeling today?</h2>
+        <p>Find out why you are hiccuping or feeling that itching in your eyes. Go ahead and enter the symptoms you are experiencing today.</p>
+
+        <!-- for spacing -->
+        <br></br><!-- for spacing -->
+			
+        <div class="nav mainnavs" id="tagdiv">
+			</div>
+		
+<!-- for spacing -->
+        <br></br><!-- for spacing -->
+	<div class="row">
+			<div class="col-lg-6">
+				<div class="input-group">
+				  <span class="input-group-addon" id="basic-addon1">Symptom</span>
+				  <input type="text" id="sym" class="form-control" placeholder="Type a symptom here" aria-describedby="basic-addon1">
+				</div>
+			</div>
+			<a class="btn btn-lg btn-default" href="#" role="button" onClick="add()">Add symptom &raquo;</a>
+	</div>
+		<!-- for spacing -->
+        <br></br><!-- for spacing -->
+        <div class="row">
+        </div>
+          <a class="btn btn-lg btn-default" href="#" role="button">Diagnose &raquo;</a>
+          </div>
+          
+        <p></p><!-- for spacing -->
+          <div class="mastfoot">
+		<div class="inner">
+		  <p> <span class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></span> Georgia Institute of Technology, 2015 &emsp; <span class="glyphicon glyphicon-link" aria-hidden="true"></span> <a href="http://cc.gatech.edu">CC@@GT</a></p>
+		</div>
+	  </div>
+	  </div>
+
+</body>

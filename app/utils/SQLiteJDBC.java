@@ -65,6 +65,16 @@ public class SQLiteJDBC {
 	    }
 		return symptoms;
 	}
+	
+	public ArrayList<String> getSymptomListByName() throws SQLException
+	{
+		ArrayList<String> symptoms = new ArrayList<String>();
+	    ResultSet rs = stmt.executeQuery("SELECT symptomName FROM Symptom;");
+	    while (rs.next()) {
+	    	symptoms.add(rs.getString("symptomName"));
+	    }
+		return symptoms;
+	}
 
 	public HashMap<Integer, Integer[]> getDiagnosisSymptomMap() throws SQLException {
 		// TODO Auto-generated method stub

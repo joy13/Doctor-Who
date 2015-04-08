@@ -14,4 +14,9 @@ public class Symptom
 	public List<String> diagnosis;
 	
 	public static Finder<Integer, Symptom> symptomFinder = new Model.Finder<>(Integer.class, Symptom.class);
+
+	public static Object findByName(String term, int aUTOCOMPLETE_MAX) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
