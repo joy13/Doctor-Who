@@ -6,11 +6,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.sql.*;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+
+import models.Disease;
+import models.Doctor;
 import models.HomeViewModel;
 import models.Symptom;
 import play.*;
@@ -21,6 +28,9 @@ import play.db.ebean.Model.Finder;
 import play.mvc.*;
 import utils.SQLiteJDBC;
 import views.html.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 public class Application extends Controller {
 	
@@ -37,11 +47,12 @@ public class Application extends Controller {
     	return ok(index.render("hello"));
     }
     
-    public static Result showDisease() throws ClassNotFoundException, SQLException {
-    	
-    	//List<Symptom> symptoms = Symptom.symptomFinder.all();
-    	
-    	Form<HomeViewModel> filledForm = homeForm.bindFromRequest();
+    public static Result diagnose()
+    {    	
+    	return ok(views.html.diagnoses.render());
+    }
+    
+    public static Result showDiagnoses() throws ClassNotFoundException, SQLException, JsonProcessingException {
     	
 //		if(filledForm.hasErrors()) {
 //    	    return badRequest(
@@ -49,21 +60,46 @@ public class Application extends Controller {
 //    	    );
 //    	  } 
 //		else {    	    
-			Map<String, String[]> m = new HashMap<String, String[]>();
-	    	m = request().body().asFormUrlEncoded();
-	    	String[] selectedSymptomsAsStrings = m.get("selectedSymptoms");
-	    	System.out.println(Arrays.toString(selectedSymptomsAsStrings));
-	    	SQLiteJDBC s = new SQLiteJDBC();
-	    	
-	    	DiagnosisDecisionAlgorithm algo = new DiagnosisDecisionAlgorithm();
-	    	HashMap<String,Float> diseases = algo.getScoredDiagnosis(selectedSymptomsAsStrings);
-	    	Collection<Float> values = diseases.values();
-	    	Set<String> diagnosis = diseases.keySet();
-	    	return ok(diagnosis.iterator().next().toString());
+    	JsonNode json = request().body().asJson();
+		ArrayNode results = (ArrayNode)json;
+    	Iterator<JsonNode> it = results.iterator();
+    	ArrayList<String> syms = new ArrayList<>();
+    	while (it.hasNext()) {
+            JsonNode node  = it.next();               
+            syms.add(node.textValue());
+            
+    	}
+    	String[] addedSymptoms =  syms.toArray(new String[syms.size()]);
+    	DiagnosisDecisionAlgorithm algo = new DiagnosisDecisionAlgorithm();
+    	HashMap<String,Float> diagnosesScoreMap = algo.getScoredDiagnosis(addedSymptoms);
+    	Set<String> ds = diagnosesScoreMap.keySet();
+    	ArrayList<Disease> diags = new ArrayList<Disease>();
+    	for(String d:ds)
+    	{
+    		Disease disease = new Disease();
+    		ArrayList<Doctor> doctors= new ArrayList<Doctor>(); //get doctors data from FHIR here
+    		disease.diagnosis = d;
+    		disease.doctors = doctors;
+    		diags.add(disease);
+    	}
+    	if(diags.size() > 4)
+    	{
+    		ArrayList<Disease> top4Diags = new ArrayList<>();
+    		for(int i=0;i<4;i++){
+    			top4Diags.add(diags.get(i));
+    		}
+    		JsonNode diagnoses = Json.toJson(top4Diags);
+    		System.out.println("json "+diagnoses);
+    		
+    		return(ok(diagnoses.toString()));
+    	}
+    	JsonNode diagnoses = Json.toJson(diags);
+    	System.out.println("json "+diagnoses);
+    	return(ok(diagnoses.toString()));
 //    	  }	
     }
     
-    public static Result symtoms() throws ClassNotFoundException, SQLException
+    public static Result symptoms() throws ClassNotFoundException, SQLException
     {
     	SQLiteJDBC sql = new SQLiteJDBC();
     	List<Symptom> symptoms = new ArrayList<Symptom>();

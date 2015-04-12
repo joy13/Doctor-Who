@@ -2,11 +2,13 @@ package utils;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.sql.DataSource;
 
 import play.db.*;
+
 
 public class SQLiteJDBC {
 	Connection connection = null;
@@ -23,10 +25,16 @@ public class SQLiteJDBC {
 		Integer[] symptomIds = new Integer[symptomNames.length];
 		for(int i=0;i<symptomNames.length;i++) {
 			String sname = symptomNames[i];
+			System.out.println(sname);
+		try{
 	    ResultSet rs = stmt.executeQuery("SELECT id as id FROM Symptom where symptomName ="+"'"+sname+"';");
 	    while (rs.next()) {
 	    	symptomIds[i]=rs.getInt("id");
 	    }
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
 		}
 		return symptomIds;		
 	}

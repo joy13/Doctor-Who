@@ -13,7 +13,7 @@ import play.libs.Time;
 		public List<Integer> age;
 		public List<String> lifestyle;
 		public List<String> ethnicity;
-		public List<String> specialties;
+		public List<Doctor> doctors;
 	}
 
 	

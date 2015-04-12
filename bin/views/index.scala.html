@@ -14,16 +14,55 @@ $.getJSON("/symptoms",function(data) {
     suggestions.push(obj);
     });
 });
-		$(document).ready(function(){
-			$("#sym").autocomplete({source :suggestions });
-			    });
+
+$(document).ready(function(){
+	$("#sym").autocomplete({source :suggestions });
+ });
+
+var i=0;
+added_symptoms = [];
+function add(){    
+	if (document.getElementById('sym').value!='') 
+		{   
+			i++;  
+			var title =document.getElementById('sym').value;
+			var node = document.createElement('div'); 
+			node.className = "fif";
+			added_symptoms.push(title);   
+			node.innerHTML = '<li><a id="s'+i+'"></a>'+title+'</li>';       
+			document.getElementById('tagdiv').appendChild(node);    
+		}
+	}
+
+function setSession(value) {
+	console.log(value);
+	sessionStorage.setItem('diagJson',value);	
+}
+
+$(document).ready(function(){
+	$('#diagnose').click(function(){
+		$.ajax({
+		    type: 'POST',
+		    contentType: "application/json",
+		    dataType: 'text',
+		    url: '/',
+		    data: JSON.stringify(added_symptoms),
+		    success: function(resp) {
+		    setSession(resp);
+		    }
+		  });
+		window.location.href = "/diagnoses";
+	});
+});
+
+
 </script>
 <style>
 .fif {
     display: inline-block;
     float:left;
     color: #000000;
-    background-color: #7FFFD4;
+    background-color: #A9C6FF;
     border-bottom: 1px solid #3E6D8E;
     border-right: 1px solid #7F9FB6;
     padding: 3px 4px 3px 4px;
@@ -35,26 +74,10 @@ $.getJSON("/symptoms",function(data) {
 }
 
 .inl {
-    margin-top:10px;
+    padding-left:10px;
     }
 </style>
 
-<script>
-var i=0;
-var added_symptoms = [];
-function add(){    
-    if (document.getElementById('sym').value!='') 
-    {   
-        i++;  
-        var title =document.getElementById('sym').value;
-        var node = document.createElement('div'); 
-        node.className = "fif";
-        added_symptoms.push(title);   
-        node.innerHTML = '<li><a id="s'+i+'"></a>'+title+'</li>';       
-        document.getElementById('tagdiv').appendChild(node);    
-    }
-}
-</script>
 <body>
 
  <div class="container">
@@ -74,6 +97,7 @@ function add(){
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
               <li class="active"><a href="#"><b>Check Symptoms</b></a></li>
+              <li><a href="#"><b>View Diagnoses</b></a></li>
               <li><a href="#"><b>Find a Doctor</b></a></li>
               <li><a href="#"><b>Book an Appointment</b></a></li>
             </ul>
@@ -88,7 +112,7 @@ function add(){
       <div class="jumbotron">
       <h1> Doctor Who</h1>
         <h2>How are you feeling today?</h2>
-        <p>Find out why you are hiccuping or feeling that itching in your eyes. Go ahead and enter the symptoms you are experiencing today.</p>
+        <p>Find out why you are hiccuping or feeling itchy in the eyes. Go ahead and enter the symptoms you are experiencing today.</p>
 
         <!-- for spacing -->
         <br></br><!-- for spacing -->
@@ -103,7 +127,7 @@ function add(){
 				<div class="input-group">
 				  <span class="input-group-addon" id="basic-addon1">Symptom</span>
 				  <input type="text" id="sym" class="form-control" placeholder="Type a symptom here" aria-describedby="basic-addon1">
-				</div>
+				  </div>
 			</div>
 			<a class="btn btn-lg btn-default" href="#" role="button" onClick="add()">Add symptom &raquo;</a>
 	</div>
@@ -111,7 +135,7 @@ function add(){
         <br></br><!-- for spacing -->
         <div class="row">
         </div>
-          <a class="btn btn-lg btn-default" href="#" role="button">Diagnose &raquo;</a>
+          <a class="btn btn-lg btn-default" href="#" id ="diagnose" role="button">Diagnose &raquo;</a>
           </div>
           
         <p></p><!-- for spacing -->
