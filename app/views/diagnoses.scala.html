@@ -4,6 +4,7 @@
 <script type="text/javascript" src="@routes.Assets.at("/javascripts/jquery-ui.js")"></script>
 <script type="text/javascript">
 
+var diagnoses = []
 function getdiags() {
 	var arr = sessionStorage.getItem('diagJson');
 	json = JSON.parse(arr);
@@ -11,13 +12,55 @@ function getdiags() {
 	for(var i = 0; i < json.length; i++) {
 	    var obj = json[i];
 	    console.log(obj.diagnosis);
+	    diagnoses.push(obj.diagnosis);
 	}
+	sessionStorage.removeItem('diagJson'); // name is the key
+	sessionStorage.clear();
 }
+
+function add(){  
+	var diagsdiv = document.getElementById('diagsdiv');
+	for(var i=0;i<diagnoses.length;i++)
+		{    
+			var node = document.createElement('div'); 
+			node.className = 'fif';   
+			node.innerHTML = '<li><a id="s'+i+'"></a>'+diagnoses[i]+'</li>';       
+			diagsdiv.appendChild(node);
+			var row = document.createElement('div');
+			row.className = 'row';
+			row.innerHTML = '<br></br>';
+			diagsdiv.appendChild(row);
+		}
+	}
 
 $(document).ready(function(){
 	getdiags();
+	add();
 });
 </script>
+
+<style>
+.fif {
+    display: inline-block;
+    -webkit-border-radius: 20px;
+ 	-moz-border-radius: 20px;
+ 	-o-border-radius: 20px;
+ 	-ms-border-radius: 20px;
+ 	-khtml-border-radius: 20px;
+ 	border-radius: 20px;
+    float:left;
+    color: #000000;
+    background-color: #FFA088;
+    border-bottom: 1px solid #3E6D8E;
+    border-right: 1px solid #7F9FB6;
+    padding: 3px 20px 3px 20px;
+    margin: 2px 50px 10px 10px;
+    text-decoration: none;
+    font-size: 16pt;
+    line-height: 3.5;
+    white-space: nowrap;
+}
+</style>
 
 <div class="container">
 
@@ -35,10 +78,10 @@ $(document).ready(function(){
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-              <li><a href="#"><b>Enter Symptoms</b></a></li>
+              <li><a href="/"><b>Enter Symptoms</b></a></li>
               <li class="active"><a href="#"><b>View Diagnoses</b></a></li>
-              <li><a href="#"><b>Find a Doctor</b></a></li>
-              <li><a href="#"><b>Book an Appointment</b></a></li>
+              <li><a><b>Find a Doctor</b></a></li>
+              <li><a><b>Book an Appointment</b></a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
               <li><a href="#">Contact Us</a></li>
@@ -49,7 +92,12 @@ $(document).ready(function(){
 
       <!-- Main component message or call to action -->
       <div class="jumbotron">
-      <h2>Possible Diagnosis</h2>
+      <h2>Conditions You Might Have</h2>
+      <p>Don't worry, this is just a suggestion. Click on any of the conditions to see a 
+      real doctor who can help you with it!</p>
+      <div class="nav mainnavs" id="diagsdiv">
+      <p></p>                  
+      </div>
       </div>
       
       <p></p><!-- for spacing -->
