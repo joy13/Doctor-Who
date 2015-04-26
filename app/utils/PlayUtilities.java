@@ -94,7 +94,7 @@ public class PlayUtilities {
            Message message = new MimeMessage(session);
            message.setFrom(new InternetAddress("cs6440.doctorwho@gmail.com"));
            message.setRecipients(Message.RecipientType.TO,
-                   InternetAddress.parse(email));
+                   InternetAddress.parse("cs6440.doctorwho@gmail.com"));
            message.setSubject("Appointment confirmation");
            message.setText("Hi, " + name + "! "+
                    "Your appointment is confirmed with " + d.name + "!");
@@ -105,7 +105,7 @@ public class PlayUtilities {
            Message message2 = new MimeMessage(session);
            message2.setFrom(new InternetAddress("cs6440.doctorwho@gmail.com"));
            message2.setRecipients(Message.RecipientType.TO,
-                   InternetAddress.parse(d.email));
+                   InternetAddress.parse("cs6440.doctorwho@gmail.com"));
            message2.setSubject("Appointment alert");
            message2.setText("Hi, " + d.name + ", an appointment is confirmed with " + name + "!");
 

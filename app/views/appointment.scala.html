@@ -36,7 +36,8 @@
 var doctors = {}; //hashmap, key being doctor's name and value being his timeslots
 var diag;
 var chosenDr;
- function getdoctors() {
+var appointmentDict = {};
+function getdoctors() {
 	 	diag = sessionStorage.getItem('chosenDiag');
 		var arr = sessionStorage.getItem('doctorJson');
 		json = JSON.parse(arr);
@@ -88,21 +89,15 @@ var chosenDr;
 	}
 	 
  
-	function book()
+	function setBookingInfo()
 	{	var date = $('#booking').supercal("change");
 		date = date.getFullYear() + '-' + date.getMonth() + '-' +  date.getDate();
-		var email = document.getElementById('email').value;
-		var name = document.getElementById('email').value;
-		var cell = document.getElementById('cell').value;
-		var slot = document.getElementById('select1').value;
-		setSession('date',date);
-		setSession('name',name);
-		setSession('cell',cell);
-		setSession('email',email);
-		setSession('slot',email);
-		setSession('dr',chosenDr);
-		console.log(chosenDr);
-		window.location.href = "/confirmation";
+		appointmentDict['dr']= chosenDr;
+		appointmentDict['name'] = document.getElementById('name').value;
+		appointmentDict['email'] = document.getElementById('email').value;
+		appointmentDict['cell'] = document.getElementById('cell').value;
+		appointmentDict['slot'] = document.getElementById('select1').value;
+		appointmentDict['date'] = date;
 		}
 
 $(document).ready(function(){
@@ -111,9 +106,28 @@ $(document).ready(function(){
 		showDoctors();
 		addEvent();
 });
+
+$(document).ready(function(){
+	$('#book').click(function(){
+		setBookingInfo();
+		console.log(appointmentDict);
+		$.ajax({
+		    type: 'POST',
+		    contentType: "application/json",
+		    dataType: 'text',
+		    url: '/confirmation',
+		    data: JSON.stringify(appointmentDict),
+		    success: function(resp) {
+		    setSession("confirmationStatus",resp);
+		    }
+		  });
+		setTimeout(function () {
+   			window.location.href = "/confirmation"; }, 2000);
+	});
+});
  
  </script>
- 
+ <body>
  <div class="container">
 
       <!-- Static navbar -->
@@ -216,19 +230,15 @@ $(document).ready(function(){
         
         <br></br><!-- for spacing -->
         <div class="row">
-        </div>
-          <a class="btn btn-lg btn-default" href="#" id ="diagnose" role="button" onClick="book()">Book appointment &raquo;</a>	
-		
-		
+          <a class="btn btn-lg btn-default" href="#" id ="book" role="button">Book appointment &raquo;</a>			
 </div>
-        
+ </div>       
 <p></p><!-- for spacing -->
           <div class="mastfoot">
 		<div class="inner">
 		  <p> <span class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></span> Georgia Institute of Technology, 2015 &emsp; <span class="glyphicon glyphicon-link" aria-hidden="true"></span> <a href="http://cc.gatech.edu">CC@@GT</a></p>
 		</div>
 	  </div>
-	  </div>
-		
-	  
+	  </div>	
+</body>	  
         

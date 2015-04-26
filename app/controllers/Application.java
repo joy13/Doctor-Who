@@ -152,23 +152,28 @@ public class Application extends Controller {
 
 	public static Result confirmation()
 	{
-		Map<String, String[]> m = new HashMap<String, String[]>();
-		m = request().body().asFormUrlEncoded();
-		String name = m.get("name")[0];
-		String cell = m.get("cell")[0];
-		String year = m.get("year")[0];
-		String time = m.get("time")[0];
-		String dateTime = year + " " + time;
-		String email = "bjay001@gmail.com";
+		Map<String, String> appointmentMap = new HashMap<String, String>();
+		JsonNode json = request().body().asJson();
+		System.out.println("appointment json "+json);
+		Iterator<String> keys = json.fieldNames();
+		while(keys.hasNext())
+		{
+			String key = keys.next();
+			appointmentMap.put(key,json.get(key).textValue());
+			System.out.println(key+ " "+json.get(key).textValue());
+		}
 
 		SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
 		try {
-			Date date = f.parse(dateTime);
+			Date date = f.parse(appointmentMap.get("date"));
 			Doctor d = new Doctor(); //instead of this...fetch from db or get from view
+			d.name = appointmentMap.get("dr");
+			d.slots = new ArrayList<>();
 			if(d.slots.contains(date))
 				return ok("This slot is already taken. Please try a different one.");
 			d.slots.add(date);
-			PlayUtilities.sendEmail(name, cell, email, d);
+			PlayUtilities.sendEmail(appointmentMap.get("name"), appointmentMap.get("cell"), 
+					appointmentMap.get("email"), d);
 		}
 		catch (Exception e) {
 			// TODO Auto-generated catch block

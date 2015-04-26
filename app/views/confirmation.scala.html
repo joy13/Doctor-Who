@@ -1,8 +1,53 @@
+<link rel="stylesheet" media="screen" href=@routes.Assets.at("stylesheets/jquery-ui.css")>
+<link rel="stylesheet" media="screen" href=@routes.Assets.at("stylesheets/bootstrap.min.css")>
+<script type="text/javascript" src="@routes.Assets.at("/javascripts/jquery.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("/javascripts/jquery-ui.js")"></script>
 
- @import helper._
  
-<h1>Welcome!</h1>
-<script>
-console.log(sessionStorage.getItem('dr'));
+<script type="text/javascript">
+var stat;
+ $(document).ready(function(){
+	 stat = sessionStorage.getItem('confirmationStatus');
+	document.getElementById('status').innerHTML = stat;
+ });
 </script>
-        <input type="submit" value="Book">
+<body>
+<div class="container">
+
+      <!-- Static navbar -->
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li><a href="/"><b>Enter Symptoms</b></a></li>
+              <li><a href="/diagnoses"><b>View Diagnoses</b></a></li>
+              <li><a href="/appointment"><b>Book an Appointment</b></a></li>
+              <li class="active"><a href="#"><b>Confirmation</b></a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="#">Contact Us</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav>
+ 
+  <!-- Main component message or call to action -->
+      <div class="jumbotron"> 
+        <h2 id ="status"></h2>
+</div>
+<div class="mastfoot">
+		<div class="inner">
+		  <p> <span class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></span> Georgia Institute of Technology, 2015 &emsp; <span class="glyphicon glyphicon-link" aria-hidden="true"></span> <a href="http://cc.gatech.edu">CC@@GT</a></p>
+		</div>
+	  </div>
+	  </div>
+</body>
