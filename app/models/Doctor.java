@@ -7,7 +7,9 @@ import play.libs.Time;
 
 public class Doctor
 {
+	public String name;
 	public List<String> specialty;
 	public ContactInfo contactInfo;
-	public List<TimeSlot> slots;
+	public List<Date> slots;
+	public String email;
 }

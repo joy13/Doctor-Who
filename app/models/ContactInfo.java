@@ -11,5 +11,6 @@ public class ContactInfo
 	public String address;
 	public String phone;
 	public int zipcode;
+	public String email;
 	
 }

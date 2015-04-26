@@ -4,7 +4,9 @@
 <script type="text/javascript" src="@routes.Assets.at("/javascripts/jquery-ui.js")"></script>
 <script type="text/javascript">
 
-var diagnoses = []
+var diagnoses = [];
+var doctors = {};
+var doctor;
 function getdiags() {
 	var arr = sessionStorage.getItem('diagJson');
 	json = JSON.parse(arr);
@@ -13,18 +15,48 @@ function getdiags() {
 	    var obj = json[i];
 	    console.log(obj.diagnosis);
 	    diagnoses.push(obj.diagnosis);
+	    console.log(obj.doctors[0].name);
+	    doctors[obj.diagnosis] = obj.doctors[0].name;
 	}
-	sessionStorage.removeItem('diagJson'); // name is the key
-	sessionStorage.clear();
+	console.log(doctors);
+	/*sessionStorage.removeItem('diagJson'); // name is the key
+	sessionStorage.clear();*/
 }
 
+function setSession(key,value) {
+	sessionStorage.setItem(key,value);	
+}
+
+function getDoctorForDisease(d) {
+	diag = diagdict[d];
+	setSession('chosenDiag',diag)
+	doctor = doctors[diag];
+	console.log(d + ", " + diag + ", "+doctor);
+	$.ajax({
+	    type: 'POST',
+	    contentType: "application/json",
+	    dataType: 'text',
+	    url: '/appointment',
+	    data: JSON.stringify(doctor),
+	    success: function(resp) {
+	    	setSession('doctorJson',resp)	
+	    	console.log(resp);
+	    }
+	  });
+	setTimeout(function () {
+		window.location.href = "/appointment"; }, 2000); 
+}
+diagdict = {};
 function add(){  
 	var diagsdiv = document.getElementById('diagsdiv');
+	
 	for(var i=0;i<diagnoses.length;i++)
-		{    
-			var node = document.createElement('div'); 
+		{   
+			var d = diagnoses[i];
+			var node = document.createElement('div');
+			diagdict[i] = d;
 			node.className = 'fif';   
-			node.innerHTML = '<li><a id="s'+i+'"></a>'+diagnoses[i]+'</li>';       
+			node.innerHTML = '<li><a id="s'+i+'"></a>'+diagnoses[i]+'</li>';
 			diagsdiv.appendChild(node);
 			var row = document.createElement('div');
 			row.className = 'row';
@@ -32,10 +64,23 @@ function add(){
 			diagsdiv.appendChild(row);
 		}
 	}
+	
+function addEvent(){
+	var childDivs = document.getElementById('diagsdiv').getElementsByTagName('div');
+	for( i=0; i< childDivs.length; i++ )
+	{
+	 childDivs[i].index = i/2;
+	 childDivs[i].addEventListener('click', function (event) {
+		 console.log("from event "+this.index);
+		 getDoctorForDisease(this.index);
+	 },false);
+	}
+}
 
 $(document).ready(function(){
 	getdiags();
 	add();
+	addEvent();
 });
 </script>
 

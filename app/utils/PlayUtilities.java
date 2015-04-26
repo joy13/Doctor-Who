@@ -7,6 +7,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
+import models.Doctor;
 
 import com.codesnippets4all.json.generators.JsonGeneratorFactory;
 import com.codesnippets4all.json.parsers.JSONParser;
@@ -49,5 +60,63 @@ public class PlayUtilities {
 		}
 		return jsonData;
 	}
+	
+	public static List<String> slotGenerator()
+	{
+		ArrayList<String> list = new ArrayList<String>() {{
+		    add("9:00 - 11:00");
+		    add("11:00 - 13:00");
+		    add("13:00 - :1500");
+		}};
+		return list;
+	}
+	
+	public static void sendEmail(String name, String cell, String email, Doctor d)
+	{
+		final String username = "cs6440.doctorwho@gmail.com";
+		final String password = "doctorwhodoctorwho";
+
+       Properties props = new Properties();
+       props.put("mail.smtp.auth", "true");
+       props.put("mail.smtp.starttls.enable", "true");
+       props.put("mail.smtp.host", "smtp.gmail.com");
+       props.put("mail.smtp.port", "587");
+
+       Session session = Session.getInstance(props,
+               new javax.mail.Authenticator() {
+                   protected PasswordAuthentication  getPasswordAuthentication() {
+                       return new PasswordAuthentication(username, password);
+                   }
+               });
+
+       try {
+
+           Message message = new MimeMessage(session);
+           message.setFrom(new InternetAddress("cs6440.doctorwho@gmail.com"));
+           message.setRecipients(Message.RecipientType.TO,
+                   InternetAddress.parse(email));
+           message.setSubject("Appointment confirmation");
+           message.setText("Hi, " + name + "! "+
+                   "Your appointment is confirmed with " + d.name + "!");
+
+           Transport.send(message);
+
+           
+           Message message2 = new MimeMessage(session);
+           message2.setFrom(new InternetAddress("cs6440.doctorwho@gmail.com"));
+           message2.setRecipients(Message.RecipientType.TO,
+                   InternetAddress.parse(d.email));
+           message2.setSubject("Appointment alert");
+           message2.setText("Hi, " + d.name + ", an appointment is confirmed with " + name + "!");
+
+           Transport.send(message2);
+
+           System.out.println("Mail sent succesfully!");
+
+       } catch (MessagingException e) {
+           throw new RuntimeException(e);
+       }
+   }
+	
 
 }

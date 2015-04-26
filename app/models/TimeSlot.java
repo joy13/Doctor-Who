@@ -8,7 +8,6 @@ import play.libs.Time;
 
 public class TimeSlot
 {
-	public Date date;
-	public Time time;
+	public String Period;
 	public Boolean isAvailable;
 }

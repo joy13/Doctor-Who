@@ -4,6 +4,7 @@
 <link rel="stylesheet" media="screen" href=@routes.Assets.at("stylesheets/bootstrap.min.css")>
 <script type="text/javascript" src="@routes.Assets.at("/javascripts/jquery.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("/javascripts/jquery-ui.js")"></script>
+
 <script type="text/javascript">
 var suggestions = [];
 $.getJSON("/symptoms",function(data) {
@@ -99,6 +100,7 @@ margin-right: 10px;
             
           </div>
           <div id="navbar" class="navbar-collapse collapse">
+          <img src="@routes.Assets.at("/images/drwhoLogo.png")"/>
             <ul class="nav navbar-nav">
               <li class="active"><a href="#"><b>Check Symptoms</b></a></li>
               <li><a><b>View Diagnoses</b></a></li>

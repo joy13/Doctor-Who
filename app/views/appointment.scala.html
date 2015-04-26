@@ -1,0 +1,234 @@
+<link rel="stylesheet" media="screen" href=@routes.Assets.at("stylesheets/calander.css")>
+<link rel="stylesheet" media="screen" href=@routes.Assets.at("stylesheets/bootstrap.min.css")>
+<link rel="stylesheet" media="screen" href=@routes.Assets.at("stylesheets/jquery-ui.css")>
+<script type="text/javascript" src="@routes.Assets.at("/javascripts/jquery.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("/javascripts/jquery-ui.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("/javascripts/jquery-1.9.1.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("/javascripts/jquery.supercal.js")"></script>
+ @import helper._
+ <style>
+.fif {
+    display: inline-block;
+    -webkit-border-radius: 20px;
+ 	-moz-border-radius: 20px;
+ 	-o-border-radius: 20px;
+ 	-ms-border-radius: 20px;
+ 	-khtml-border-radius: 20px;
+ 	border-radius: 20px;
+    float:left;
+    color: #000000;
+    background-color: #99CCFF;
+    border-bottom: 1px solid #3E6D8E;
+    border-right: 1px solid #7F9FB6;
+    padding: 3px 20px 3px 20px;
+    margin: 2px 50px 10px 10px;
+    text-decoration: none;
+    font-size: 16pt;
+    line-height: 3.5;
+    white-space: nowrap;
+}
+.selected {
+    background-color : #6CB5FF;
+}
+</style>
+ 
+ <script type="text/javascript">
+var doctors = {}; //hashmap, key being doctor's name and value being his timeslots
+var diag;
+var chosenDr;
+ function getdoctors() {
+	 	diag = sessionStorage.getItem('chosenDiag');
+		var arr = sessionStorage.getItem('doctorJson');
+		json = JSON.parse(arr);
+		console.log("diag "+diag+" "+json);
+		doctors[json.name] = json.slots;
+		/*for(var i = 0; i < json.length; i++) {
+		    var obj = json[i];
+		    console.log("obj "+obj);
+		    console.log(obj.name);
+		    doctors[obj.name] = obj.slots;
+		}*/
+		console.log(doctors);
+		/*sessionStorage.removeItem('doctorJson'); // name is the key
+		sessionStorage.clear();*/
+	}
+
+ function showDoctors(){  
+		var docsdiv = document.getElementById('docsdiv');
+		console.log(doctors);
+		for(var key in doctors)
+			{   
+				var node = document.createElement('div');
+				node.className = 'fif'; 
+				node.id = key;  
+				node.innerHTML = '<li><a id="d'+key+'"></a>'+key+'</li>';
+				docsdiv.appendChild(node);
+				/* var row = document.createElement('div');
+				row.className = 'row';
+				row.innerHTML = '<br></br>';
+				diagsdiv.appendChild(row); */
+			}
+		}
+ function addEvent(){
+		var childDivs = document.getElementById('docsdiv').getElementsByTagName('div');
+		for( i=0; i< childDivs.length; i++ )
+		{
+		console.log(childDivs[i]);
+		var doc = childDivs[i].id;
+		 childDivs[i].addEventListener('click', function (event) {
+			 chosenDr = doc;
+			 var div = document.getElementById(doc);
+			 div.className += " selected";
+		 },false);
+		}
+	}
+
+ function setSession(key,value) {
+		sessionStorage.setItem(key,value);	
+	}
+	 
+ 
+	function book()
+	{	var date = $('#booking').supercal("change");
+		date = date.getFullYear() + '-' + date.getMonth() + '-' +  date.getDate();
+		var email = document.getElementById('email').value;
+		var name = document.getElementById('email').value;
+		var cell = document.getElementById('cell').value;
+		var slot = document.getElementById('select1').value;
+		setSession('date',date);
+		setSession('name',name);
+		setSession('cell',cell);
+		setSession('email',email);
+		setSession('slot',email);
+		setSession('dr',chosenDr);
+		console.log(chosenDr);
+		window.location.href = "/confirmation";
+		}
+
+$(document).ready(function(){
+		getdoctors();
+		document.getElementById('diagnosis').innerHTML = "Consult a real doctor for "+diag;
+		showDoctors();
+		addEvent();
+});
+ 
+ </script>
+ 
+ <div class="container">
+
+      <!-- Static navbar -->
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li><a href="/"><b>Enter Symptoms</b></a></li>
+              <li><a href="/diagnoses"><b>View Diagnoses</b></a></li>
+              <li class="active"><a href="#"a><b>Book an Appointment</b></a></li>
+              <li><a><b>Confirmation</b></a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="#">Contact Us</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav>
+ 
+  <!-- Main component message or call to action -->
+      <div class="jumbotron">
+<h2 id ="diagnosis"></h2> 
+<h3>Book your appointment in 4 easy steps!</h3>
+<br></br>
+<div class="panel panel-info">
+<div class="panel-heading"><p class="panel-title">Choose your doctor</p>
+<div class="nav mainnavs" id="docsdiv"></div>
+</div>
+</div>
+<div class="panel panel-info">
+		<div class="panel-heading"><p class="panel-title">
+		Pick a date</p>
+		</div>
+		<div class="panel-body">
+			  <div id="booking"></div>
+				<script>
+					$('#booking').supercal({
+						transition: 'none',
+					});
+					//var dt = $('.booking').supercal("date");
+					//alert(dt); 
+					//$(console.log("from appointment: "+chosenDate));
+				</script> 
+		</div>
+	  </div> 
+	  			<div class="panel panel-info">
+		<div class="panel-heading"><p class="panel-title">
+				<p>Pick a 2-hour time slot</p>				
+				  <select name="time" size="1" id="select1" >
+  					<option value="11:00">9am-11am</option>
+  					<option value="13:00" selected="selected">1pm-3pm</option>
+  					<option value="15:00">3pm-5pm</option>
+					</select>
+					</div>
+				</div>
+	<div class="panel panel-info">
+		<div class="panel-heading"><p class="panel-title">
+		<p>Enter your information</p>
+	<div class="row">
+			<div class="col-lg-6">
+				<div class="input-group">
+				  <span class="input-group-addon" id="basic-addon1">name</span>
+				  <input type="text" id="name" class="form-control" aria-describedby="basic-addon1">
+				  </div>
+			</div>
+	</div>	
+	<br></br>
+	<div class="row">
+			<div class="col-lg-6">
+				<div class="input-group">
+				  <span class="input-group-addon" id="basic-addon1">email</span>
+				  <input type="text" id="email" class="form-control" aria-describedby="basic-addon1">
+				  </div>
+			</div>
+	</div>
+	<br></br>
+	<div class="row">
+			<div class="col-lg-6">
+				<div class="input-group">
+				  <span class="input-group-addon" id="basic-addon3">cell number</span>
+				  <input type="text" id="cell" class="form-control" aria-describedby="basic-addon1">
+				  </div>
+			</div>
+	</div>
+	</div>
+</div>
+
+        <!--  Patient Email <input type="text" name="email"> <br>
+        Patient Cell<input type="text" name="cell"> <br>
+        <input type="submit" value="Book">	-->
+        
+        <br></br><!-- for spacing -->
+        <div class="row">
+        </div>
+          <a class="btn btn-lg btn-default" href="#" id ="diagnose" role="button" onClick="book()">Book appointment &raquo;</a>	
+		
+		
+</div>
+        
+<p></p><!-- for spacing -->
+          <div class="mastfoot">
+		<div class="inner">
+		  <p> <span class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></span> Georgia Institute of Technology, 2015 &emsp; <span class="glyphicon glyphicon-link" aria-hidden="true"></span> <a href="http://cc.gatech.edu">CC@@GT</a></p>
+		</div>
+	  </div>
+	  </div>
+		
+	  
+        
