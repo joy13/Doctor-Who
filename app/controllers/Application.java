@@ -223,7 +223,7 @@ public class Application extends Controller {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return ok(Json.toJson("Confirmed with "+appointmentMap.get("dr")
+		return ok(Json.toJson("Your appointment is confirmed with "+appointmentMap.get("dr")
 				+" !").toString());
 
 	}
