@@ -94,24 +94,31 @@ public class Application extends Controller {
 			ArrayList<Doctor> doctors = null;
 			if(diagCount < 4) {
 				Disease disease = new Disease();
+				doctors = new ArrayList<Doctor>();
 				for (Entry<String, ArrayList<String>> e : conditionDoctorMap.entrySet()) {
 					String[] terms = d.toLowerCase().split(" "); 
 					for(String term: terms)
 					{
-						if (e.getKey().toLowerCase().contains(term)){
-							ArrayList<String> drNames = e.getValue();
-							System.out.println(term+" "+drNames.get(0));
-							doctors = new ArrayList<Doctor>();
-							for(String name: drNames)
-							{
-								Doctor doctor = new Doctor();
-								doctor.name = name;
-								doctors.add(doctor);
+						if(term != "" && term != " " && term.length() > 3) {
+							if (e.getKey().toLowerCase().contains(term) || e.getKey().equalsIgnoreCase(term)){
+								ArrayList<String> drNames = e.getValue();
+								for(String name: drNames)
+								{
+									Doctor doctor = new Doctor();
+									System.out.println("term "+term+" "+name);
+									doctor.name = name;
+									doctors.add(doctor);
+								}
 							}
 						}
 					}
 				}
-				if(doctors == null){
+				System.out.println(d);
+				for(int i=0;i<doctors.size();i++)
+				{
+					System.out.println(doctors.get(i).name);
+				}
+				if(doctors == null || doctors.size() == 0){
 					String[] dummyNames = MockProvider.mockDoctors();
 					doctors = new ArrayList<Doctor>();
 					for(int i=0;i<dummyNames.length;i++)
@@ -120,6 +127,11 @@ public class Application extends Controller {
 						doctor.name = dummyNames[i];
 						doctors.add(doctor);
 					}
+				}
+				System.out.println(d);
+				for(int i=0;i<doctors.size();i++)
+				{
+					System.out.println(doctors.get(i).name);
 				}
 				//get doctors data from FHIR here
 				disease.diagnosis = d;
@@ -211,8 +223,8 @@ public class Application extends Controller {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return ok(Json.toJson("Your appointment is confirmed with "+appointmentMap.get("dr")
-				+ ", Please check your email for details!"));
+		return ok(Json.toJson("Confirmed with "+appointmentMap.get("dr")
+				+" !").toString());
 
 	}
 

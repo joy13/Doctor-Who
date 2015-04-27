@@ -7,7 +7,7 @@
 <script type="text/javascript">
 var stat;
  $(document).ready(function(){
-	 stat = JSON.parse(sessionStorage.getItem('confirmationStatus'));
+	 stat = sessionStorage.getItem('confirmationStatus');
 	 console.log("ready "+stat);
 	document.getElementById('status').innerHTML = stat;
  });
@@ -40,8 +40,11 @@ var stat;
  
   <!-- Main component message or call to action -->
       <div class="jumbotron"> 
-      <h2>Your appointment status</h2>
+      <h2>Your appointment is booked!</h2>
+      <br></br>
         <p id ="status"></p>
+        <br></br>
+        <p>Please check your email for details.</p>
 </div>
 <div class="mastfoot">
 		<div class="inner">
