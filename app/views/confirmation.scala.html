@@ -9,7 +9,7 @@ var stat;
  $(document).ready(function(){
 	 stat = sessionStorage.getItem('confirmationStatus');
 	 console.log("ready "+stat);
-	document.getElementById('status').innerHTML = stat;
+	document.getElementById('status').innerHTML = JSON.parse(stat);
  });
 </script>
 <body>
@@ -40,7 +40,7 @@ var stat;
  
   <!-- Main component message or call to action -->
       <div class="jumbotron"> 
-      <h2>Your appointment is booked!</h2>
+      <h2>Your appointment is booked</h2>
       <br></br>
         <p id ="status"></p>
         <br></br>

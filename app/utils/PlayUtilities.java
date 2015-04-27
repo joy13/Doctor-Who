@@ -97,7 +97,7 @@ public class PlayUtilities {
                    InternetAddress.parse(email));
            message.setSubject("Appointment confirmation");
            message.setText("Hi, " + name + "! "+
-                   "Your appointment is confirmed with " + d.name + "on "
+                   "Your appointment is confirmed with " + d.name + " on "
         		   +date + " at " +slot + "!");
 
            Transport.send(message);
