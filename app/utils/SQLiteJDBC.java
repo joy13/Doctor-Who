@@ -113,5 +113,16 @@ public class SQLiteJDBC {
 	    }
 		return diagnosis;
 	}
+	
+	public HashMap<String,ArrayList<String>> getConditionDoctorMap() throws SQLException
+	{
+		HashMap<String,ArrayList<String>> conditionDoctorMap = new HashMap<>();
+		ResultSet rs3 = stmt.executeQuery("SELECT condition as c, doctors as d FROM ConditionDr;");
+	    while (rs3.next()) {
+	    	ArrayList<String> docs = new ArrayList<String>(Arrays.asList(rs3.getString("d").split(";")));
+	    	conditionDoctorMap.put(rs3.getString("c"),docs);
+	    }
+		return conditionDoctorMap;
+	}
 
 }

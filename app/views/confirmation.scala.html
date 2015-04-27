@@ -7,7 +7,8 @@
 <script type="text/javascript">
 var stat;
  $(document).ready(function(){
-	 stat = sessionStorage.getItem('confirmationStatus');
+	 stat = JSON.parse(sessionStorage.getItem('confirmationStatus'));
+	 console.log("ready "+stat);
 	document.getElementById('status').innerHTML = stat;
  });
 </script>
@@ -33,16 +34,14 @@ var stat;
               <li><a href="/appointment"><b>Book an Appointment</b></a></li>
               <li class="active"><a href="#"><b>Confirmation</b></a></li>
             </ul>
-            <ul class="nav navbar-nav navbar-right">
-              <li><a href="#">Contact Us</a></li>
-            </ul>
           </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->
       </nav>
  
   <!-- Main component message or call to action -->
       <div class="jumbotron"> 
-        <h2 id ="status"></h2>
+      <h2>Your appointment status</h2>
+        <p id ="status"></p>
 </div>
 <div class="mastfoot">
 		<div class="inner">

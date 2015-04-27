@@ -5,6 +5,7 @@
 <script type="text/javascript" src="@routes.Assets.at("/javascripts/jquery-ui.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("/javascripts/jquery-1.9.1.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("/javascripts/jquery.supercal.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("/javascripts/validate.js")"></script>
  @import helper._
  <style>
 .fif {
@@ -21,14 +22,18 @@
     border-bottom: 1px solid #3E6D8E;
     border-right: 1px solid #7F9FB6;
     padding: 3px 20px 3px 20px;
-    margin: 2px 50px 10px 10px;
+    margin: 2px 10px 10px 10px;
     text-decoration: none;
-    font-size: 16pt;
-    line-height: 3.5;
+    font-size: 14pt;
+    line-height: 3.0;
     white-space: nowrap;
 }
 .selected {
     background-color : #6CB5FF;
+}
+
+.redTextClass {
+	 color: Red;
 }
 </style>
  
@@ -36,19 +41,20 @@
 var doctors = {}; //hashmap, key being doctor's name and value being his timeslots
 var diag;
 var chosenDr;
+var chosenDate;
 var appointmentDict = {};
 function getdoctors() {
 	 	diag = sessionStorage.getItem('chosenDiag');
 		var arr = sessionStorage.getItem('doctorJson');
 		json = JSON.parse(arr);
 		console.log("diag "+diag+" "+json);
-		doctors[json.name] = json.slots;
-		/*for(var i = 0; i < json.length; i++) {
+		//doctors[json.name] = json.slots;
+		for(var i = 0; i < json.length; i++) {
 		    var obj = json[i];
 		    console.log("obj "+obj);
 		    console.log(obj.name);
 		    doctors[obj.name] = obj.slots;
-		}*/
+		}
 		console.log(doctors);
 		/*sessionStorage.removeItem('doctorJson'); // name is the key
 		sessionStorage.clear();*/
@@ -64,10 +70,6 @@ function getdoctors() {
 				node.id = key;  
 				node.innerHTML = '<li><a id="d'+key+'"></a>'+key+'</li>';
 				docsdiv.appendChild(node);
-				/* var row = document.createElement('div');
-				row.className = 'row';
-				row.innerHTML = '<br></br>';
-				diagsdiv.appendChild(row); */
 			}
 		}
  function addEvent(){
@@ -77,8 +79,14 @@ function getdoctors() {
 		console.log(childDivs[i]);
 		var doc = childDivs[i].id;
 		 childDivs[i].addEventListener('click', function (event) {
-			 chosenDr = doc;
-			 var div = document.getElementById(doc);
+			 chosenDr = this.id;
+			 var div = document.getElementById(this.id);
+			 var childDivs = document.getElementById('docsdiv').getElementsByTagName('div');
+				for( i=0; i< childDivs.length; i++ )
+				{
+					childDivs[i].className = "";
+					childDivs[i].className = "fif";
+				}
 			 div.className += " selected";
 		 },false);
 		}
@@ -87,19 +95,67 @@ function getdoctors() {
  function setSession(key,value) {
 		sessionStorage.setItem(key,value);	
 	}
-	 
+
+ function validateFields()
+ {
+	 var fname  = document.getElementById('name');
+	 var femail  = document.getElementById('email');
+	 var fdate  = chosenDate;
+	 var fdoctor  = chosenDr; 
+	 var next = fname.nextSibling;
+     if (next && next.className === "redTextClass")
+        fname.parentNode.removeChild(next);
+     var next = femail.nextSibling;
+     if (next && next.className === "redTextClass")
+        femail.parentNode.removeChild(next);
+     if(fdoctor == null) {
+ 		alert("Please choose a doctor");
+ 		return false;
+ 	}
+ 	else if(fdate == null) {
+ 		alert("Please choose a date");
+ 		return false;
+ 	}	
+ 	else if(fname.value == null || fname.value == "") {
+     var warningSpan = document.createElement("span");
+ 	warningSpan.className = "redTextClass";
+     warningSpan.innerHTML = '<br></br>*Please enter a value';
+     fname.parentNode.insertBefore(warningSpan, fname.nextSibling);
+     return false;
+ }
+	else if(femail.value == null || femail.value == "")
+		{
+			var warningSpan = document.createElement("span");
+	    	warningSpan.className = "redTextClass";
+			warningSpan.innerHTML = '<br></br>*Please enter a valid email address';
+     	femail.parentNode.insertBefore(warningSpan, femail.nextSibling);
+     	return false;
+		}
+	
+	else {
+     //no validation error, so we better remove it:
+     var next = fname.nextSibling;
+     if (next && next.className === "redTextClass")
+        fname.parentNode.removeChild(next);
+     return true;
+ } 
+ return false;
+ 	}
+ 	
  
 	function setBookingInfo()
 	{	var date = $('#booking').supercal("change");
-		date = date.getFullYear() + '-' + date.getMonth() + '-' +  date.getDate();
+		chosenDate = date;
+		var dt = date.getFullYear() + '-' + date.getMonth()+1 + '-' +  date.getDate();
+		console.log(date.getMonth());
 		appointmentDict['dr']= chosenDr;
 		appointmentDict['name'] = document.getElementById('name').value;
 		appointmentDict['email'] = document.getElementById('email').value;
 		appointmentDict['cell'] = document.getElementById('cell').value;
 		appointmentDict['slot'] = document.getElementById('select1').value;
-		appointmentDict['date'] = date;
+		appointmentDict['date'] = dt;
 		}
-
+	
 $(document).ready(function(){
 		getdoctors();
 		document.getElementById('diagnosis').innerHTML = "Consult a real doctor for "+diag;
@@ -109,6 +165,10 @@ $(document).ready(function(){
 
 $(document).ready(function(){
 	$('#book').click(function(){
+		var status = validateFields();
+		console.log("stat "+status)
+		if(status == true)
+		{
 		setBookingInfo();
 		console.log(appointmentDict);
 		$.ajax({
@@ -118,11 +178,13 @@ $(document).ready(function(){
 		    url: '/confirmation',
 		    data: JSON.stringify(appointmentDict),
 		    success: function(resp) {
+		    	console.log(resp);
 		    setSession("confirmationStatus",resp);
 		    }
 		  });
 		setTimeout(function () {
-   			window.location.href = "/confirmation"; }, 2000);
+   			window.location.href = "/confirmation"; }, 5000);
+			}
 	});
 });
  
@@ -148,9 +210,6 @@ $(document).ready(function(){
               <li><a href="/diagnoses"><b>View Diagnoses</b></a></li>
               <li class="active"><a href="#"a><b>Book an Appointment</b></a></li>
               <li><a><b>Confirmation</b></a></li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-              <li><a href="#">Contact Us</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->
@@ -240,5 +299,4 @@ $(document).ready(function(){
 		</div>
 	  </div>
 	  </div>	
-</body>	  
-        
+</body>	         

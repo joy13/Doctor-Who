@@ -71,7 +71,7 @@ public class PlayUtilities {
 		return list;
 	}
 	
-	public static void sendEmail(String name, String cell, String email, Doctor d)
+	public static void sendEmail(String name, String date, String slot, String email, Doctor d)
 	{
 		final String username = "cs6440.doctorwho@gmail.com";
 		final String password = "doctorwhodoctorwho";
@@ -94,10 +94,11 @@ public class PlayUtilities {
            Message message = new MimeMessage(session);
            message.setFrom(new InternetAddress("cs6440.doctorwho@gmail.com"));
            message.setRecipients(Message.RecipientType.TO,
-                   InternetAddress.parse("cs6440.doctorwho@gmail.com"));
+                   InternetAddress.parse(email));
            message.setSubject("Appointment confirmation");
            message.setText("Hi, " + name + "! "+
-                   "Your appointment is confirmed with " + d.name + "!");
+                   "Your appointment is confirmed with " + d.name + "on "
+        		   +date + " at " +slot + "!");
 
            Transport.send(message);
 
@@ -107,7 +108,8 @@ public class PlayUtilities {
            message2.setRecipients(Message.RecipientType.TO,
                    InternetAddress.parse("cs6440.doctorwho@gmail.com"));
            message2.setSubject("Appointment alert");
-           message2.setText("Hi, " + d.name + ", an appointment is confirmed with " + name + "!");
+           message2.setText("Hi, " + d.name + ", an appointment is confirmed with " + name + "on "
+        		   +date + " at " +slot + "!");
 
            Transport.send(message2);
 

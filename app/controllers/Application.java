@@ -10,9 +10,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.io.IOException;
 import java.sql.*;
 import java.util.Date;
+
+import org.apache.http.client.ClientProtocolException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -39,14 +43,18 @@ public class Application extends Controller {
 
 	public static Form<HomeViewModel> homeForm = Form.form(HomeViewModel.class);
 	public static int AUTOCOMPLETE_MAX = 5;
+	public static HashMap<String, ArrayList<String>> conditionDoctorMap = null;
+	public static boolean isCalled = false;
 
-	public Application()
+	public Application() 
 	{
 
 	}
 
-	public static Result index()
+	public static Result index() throws SQLException, ClassNotFoundException
 	{
+		SQLiteJDBC sql = new SQLiteJDBC();
+		conditionDoctorMap = sql.getConditionDoctorMap();
 		return ok(index.render("hello"));
 	}
 
@@ -54,18 +62,18 @@ public class Application extends Controller {
 	{    	
 		return ok(views.html.diagnoses.render());
 	}
-	
+
 	public static Result appointmentPage()
 	{    	
 		return ok(views.html.appointment.render());
 	}
-	
+
 	public static Result confirmPage()
 	{    	
 		return ok(views.html.confirmation.render());
 	}
 
-	public static Result showDiagnoses() throws ClassNotFoundException, SQLException, JsonProcessingException {
+	public static Result showDiagnoses() throws ClassNotFoundException, SQLException {
 		JsonNode json = request().body().asJson();
 		ArrayNode results = (ArrayNode)json;
 		Iterator<JsonNode> it = results.iterator();
@@ -80,30 +88,48 @@ public class Application extends Controller {
 		HashMap<String,Float> diagnosesScoreMap = algo.getScoredDiagnosis(addedSymptoms);
 		Set<String> ds = diagnosesScoreMap.keySet();
 		ArrayList<Disease> diags = new ArrayList<Disease>();
+		int diagCount = 0;
 		for(String d:ds)
-		{
-			Disease disease = new Disease();
-			ArrayList<Doctor> doctors= new ArrayList<Doctor>(); //get doctors data from FHIR here
-			Doctor doctor = new Doctor();
-			doctor.name = "Dr.Who";
-			doctors.add(doctor);
-			disease.diagnosis = d;
-			disease.doctors = doctors;
-			diags.add(disease);
-		}
-		if(diags.size() > 4)
-		{
-			ArrayList<Disease> top4Diags = new ArrayList<>();
-			for(int i=0;i<4;i++){
-				top4Diags.add(diags.get(i));
+		{	
+			ArrayList<Doctor> doctors = null;
+			if(diagCount < 4) {
+				Disease disease = new Disease();
+				for (Entry<String, ArrayList<String>> e : conditionDoctorMap.entrySet()) {
+					String[] terms = d.toLowerCase().split(" "); 
+					for(String term: terms)
+					{
+						if (e.getKey().toLowerCase().contains(term)){
+							ArrayList<String> drNames = e.getValue();
+							System.out.println(term+" "+drNames.get(0));
+							doctors = new ArrayList<Doctor>();
+							for(String name: drNames)
+							{
+								Doctor doctor = new Doctor();
+								doctor.name = name;
+								doctors.add(doctor);
+							}
+						}
+					}
+				}
+				if(doctors == null){
+					String[] dummyNames = MockProvider.mockDoctors();
+					doctors = new ArrayList<Doctor>();
+					for(int i=0;i<dummyNames.length;i++)
+					{
+						Doctor doctor = new Doctor();
+						doctor.name = dummyNames[i];
+						doctors.add(doctor);
+					}
+				}
+				//get doctors data from FHIR here
+				disease.diagnosis = d;
+				disease.doctors = doctors;
+				diags.add(disease);
+				diagCount += 1;
 			}
-			JsonNode diagnoses = Json.toJson(top4Diags);
-//			System.out.println("json "+diagnoses);
-
-			return(ok(diagnoses.toString()));
 		}
 		JsonNode diagnoses = Json.toJson(diags);
-//		System.out.println("json "+diagnoses);
+		//		System.out.println("json "+diagnoses);
 		return(ok(diagnoses.toString()));	
 	}
 
@@ -132,22 +158,27 @@ public class Application extends Controller {
 		JsonNode json = request().body().asJson();
 		System.out.println("FROM CONTROLLER "+json);
 		ArrayList<String> doctors = new ArrayList<>();
-		doctors.add(json.textValue());
-//		ArrayNode results = (ArrayNode)json;
-//		Iterator<JsonNode> it = results.iterator();
-//		while (it.hasNext()) {
-//			JsonNode node  = it.next();               
-//			doctors.add(node.textValue());
-//		}
-		String doctorAsString = doctors.get(0);
-		System.out.println("FROM CONTROLLER: doctor is "+doctorAsString);
-		
-		Doctor doc = new Doctor(); //instead of this, search based on name using sqlite.
-		doc.name = doctorAsString;
-		if(doc.slots == null)
-			doc.slots = new ArrayList<Date>();
+		//doctors.add(json.textValue());
+		ArrayNode results = (ArrayNode)json;
+		Iterator<JsonNode> it = results.iterator();
+		while (it.hasNext()) {
+			JsonNode node  = it.next();               
+			doctors.add(node.textValue());
+		}
+		ArrayList<Doctor> doctorList = new ArrayList<>();
+		for(String dname: doctors)
+		{
+			System.out.println("FROM CONTROLLER: doctor is "+dname);
+			Doctor doc = new Doctor(); //instead of this, search based on name using sqlite.
+			doc.name = dname;
+			if(doc.slots == null)
+			{
+				doc.slots = new ArrayList<Date>();
+			}
+			doctorList.add(doc);
+		}
 
-		return ok(Json.toJson(doc));
+		return ok(Json.toJson(doctorList));
 	}
 
 	public static Result confirmation()
@@ -170,16 +201,18 @@ public class Application extends Controller {
 			d.name = appointmentMap.get("dr");
 			d.slots = new ArrayList<>();
 			if(d.slots.contains(date))
-				return ok("This slot is already taken. Please try a different one.");
+				return ok(Json.toJson("Dr." +d.name+" is booked for the time you picked."
+						+"Please try a different date or time."));
 			d.slots.add(date);
-			PlayUtilities.sendEmail(appointmentMap.get("name"), appointmentMap.get("cell"), 
-					appointmentMap.get("email"), d);
+			PlayUtilities.sendEmail(appointmentMap.get("name"), appointmentMap.get("date"), 
+					appointmentMap.get("slot"), appointmentMap.get("email"), d);
 		}
 		catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return ok("Success!");
+		return ok(Json.toJson("Your appointment is confirmed with "+appointmentMap.get("dr")
+				+ ", Please check your email for details!"));
 
 	}
 

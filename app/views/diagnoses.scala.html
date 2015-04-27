@@ -5,20 +5,25 @@
 <script type="text/javascript">
 
 var diagnoses = [];
-var doctors = {};
+var diagDoctorMap = {};
 var doctor;
 function getdiags() {
 	var arr = sessionStorage.getItem('diagJson');
 	json = JSON.parse(arr);
-	console.log(arr);
+	console.log(json+" "+json.length);
 	for(var i = 0; i < json.length; i++) {
+		console.log("i is "+i);
 	    var obj = json[i];
+	    var drnames = [];
 	    console.log(obj.diagnosis);
 	    diagnoses.push(obj.diagnosis);
-	    console.log(obj.doctors[0].name);
-	    doctors[obj.diagnosis] = obj.doctors[0].name;
+	    var len = obj.doctors.length
+	    for(var j=0;j<len;j++){
+	    	drnames.push(obj.doctors[j].name)
+	    }
+	    diagDoctorMap[obj.diagnosis] = drnames;	
 	}
-	console.log(doctors);
+	console.log(diagDoctorMap);
 	/*sessionStorage.removeItem('diagJson'); // name is the key
 	sessionStorage.clear();*/
 }
@@ -28,16 +33,16 @@ function setSession(key,value) {
 }
 
 function getDoctorForDisease(d) {
-	diag = diagdict[d];
+	var diag = diagdict[d];
 	setSession('chosenDiag',diag)
-	doctor = doctors[diag];
-	console.log(d + ", " + diag + ", "+doctor);
+	var docs = diagDoctorMap[diag];
+	console.log(d + ", " + diag + ", "+docs);
 	$.ajax({
 	    type: 'POST',
 	    contentType: "application/json",
 	    dataType: 'text',
 	    url: '/appointment',
-	    data: JSON.stringify(doctor),
+	    data: JSON.stringify(docs),
 	    success: function(resp) {
 	    	setSession('doctorJson',resp)	
 	    	console.log(resp);
@@ -127,9 +132,6 @@ $(document).ready(function(){
               <li class="active"><a href="#"><b>View Diagnoses</b></a></li>
               <li><a><b>Find a Doctor</b></a></li>
               <li><a><b>Book an Appointment</b></a></li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-              <li><a href="#">Contact Us</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->

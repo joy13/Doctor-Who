@@ -4,55 +4,34 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import models.Disease;
+import models.Doctor;
 
 import org.apache.http.client.ClientProtocolException;
 
 import utils.CallFHIR;
 import utils.DiagnosisDecisionAlgorithm;
+import utils.MockProvider;
 import utils.SQLiteJDBC;
 
 
 public class UnitTest {
 
-	public static void main(String[] args) throws SQLException, ClassNotFoundException {
+public static void main(String[] args) throws SQLException, ClassNotFoundException {
 		// TODO Auto-generated method stub
 		SQLiteJDBC sql = new SQLiteJDBC();
-//		Integer[] syms = {27,80}; 
-//		HashMap<Integer, Integer[]> mp = sql.getDiagnosisSymptomMap();
-//		Iterator it = mp.entrySet().iterator();
-//	    while (it.hasNext()) {
-//	        Map.Entry pair = (Map.Entry)it.next();
-//	        System.out.println("Diag "+pair.getKey());
-//	        Integer[] ar = (Integer[])pair.getValue(); 
-//	        for(int i=0;i<ar.length;i++)
-//	        {
-//	        	System.out.println(ar[i]);
-//	        }
-//	        it.remove(); // avoids a ConcurrentModificationException
-//	    }
-		
-		DiagnosisDecisionAlgorithm algo = new DiagnosisDecisionAlgorithm();
-		String[] inputSymptoms = {"hiccup","cough","headache","watery eyes","nasal congestion","sore throat","sneeze","mouth breathing"};
-		Integer[] inputSymptomIds = sql.getSymptomIdsFromNames(inputSymptoms);
-		HashMap<String, Float> map = algo.getScoredDiagnosis(inputSymptoms);
-		Iterator it = map.entrySet().iterator();
-		System.out.println("Diagnosis");
-	    while (it.hasNext()) {
-	        Map.Entry pair = (Map.Entry)it.next();
-	        System.out.println(pair.getKey()+ " score: " + pair.getValue());
-	    }
-		
-//		CallFHIR fhir = new CallFHIR();
-//		try {
-//			Map map = fhir.getSpecialists();
-//		} catch (ClientProtocolException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
+		HashMap<String,ArrayList<String>> cd = sql.getConditionDoctorMap();
+		for (Entry<String, ArrayList<String>> e : cd.entrySet())
+		{
+			System.out.println(e.getKey());
+			for(String s: e.getValue())
+			{
+				System.out.println(s);
+			}
+				
+		}
 	}
 
 }

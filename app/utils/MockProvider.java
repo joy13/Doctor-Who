@@ -54,5 +54,16 @@ public class MockProvider {
 		diagnosis.add("flu");
 		return diagnosis;
 	}
+	
+	public static String[] mockDoctors()
+	{
+		String[] dummyNames = new String[4];
+		dummyNames[0] = "Nell K Goff, MD";
+		dummyNames[1] = "Benjamin H Scott, MD";
+		dummyNames[2] = "Priscilla I Smith, MD";
+		dummyNames[3] = "Nadine T Johns, MD";
+		
+		return dummyNames;
+	}
 
 }
